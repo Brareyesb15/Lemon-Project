@@ -1,7 +1,9 @@
-// const mainRouter = require("../src/routes/Router")
+
 const express = require("express");
 const morgan = require("morgan"); // middleware que te da informacion por consola cuando se haga una solicitud. 
 const cors = require("cors");
+const mainRouter = require("./routes/router");
+
 
 const server= express();  
 
@@ -19,7 +21,7 @@ server.use(morgan("dev"));
 
 server.use(express.json());
 
-// server.use(mainRouter); // te permite modularizar tus routes.
+server.use(mainRouter); // te permite modularizar tus routes.
 
 module.exports = {server,express}; 
 
