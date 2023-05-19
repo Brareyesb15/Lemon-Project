@@ -1,13 +1,8 @@
 require('dotenv').config();
-const { WebClient } = require('@slack/web-api');
 const { Sequelize, Op } = require('sequelize');
-const modelmessage = require('./models/message');
+const modelmessages = require('./models/message');
 
 const { DB_USER, DB_PASSWORD, DB_HOST, DB_DEPLOY, DB_DB, PORT } = process.env;
-
-// Crear instancia de WebClient de Slack
-const slackToken = process.env.SLACK_TOKEN;
-const web = new WebClient(slackToken);  // recibiendo el token de slack api
 
 // Configurar Sequelize
 const sequelize = new Sequelize({
@@ -16,18 +11,18 @@ const sequelize = new Sequelize({
   port: PORT,
   username: DB_USER,
   password: DB_PASSWORD,
-  database: DB_DEPLOY
+  database: DB_DB
 });
 
-modelmessage(sequelize)
+modelmessages(sequelize)
 
-const {message} = sequelize.models;
+const {messages} = sequelize.models;
 
 module.exports = {
     ...sequelize.models,
     sequelize,
     Op,
-    web
+   
  }; 
 
 
