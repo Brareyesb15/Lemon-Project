@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const { WebClient } = require('@slack/web-api');
-const { Sequelize, Model, DataTypes } = require('sequelize');
+const { Sequelize, DataTypes } = require('sequelize');
 const { DB_USER, DB_PASSWORD, DB_HOST, DB_DEPLOY, DB_DB, PORT } = process.env;
 
 // Crear instancia de WebClient de Slack
@@ -19,11 +19,7 @@ const sequelize = new Sequelize({
 });
 
 // Definir modelo de mensajes de Slack
-class SlackMessage extends Model {}
-SlackMessage.init({
-  text: DataTypes.TEXT,
-  timestamp: DataTypes.STRING
-}, { sequelize, modelName: 'slack_message' });
+
 
 // Iniciar servidor Express
 const app = express();
