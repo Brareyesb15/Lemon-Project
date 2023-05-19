@@ -26,7 +26,8 @@ const {message} = sequelize.models;
 module.exports = {
     ...sequelize.models,
     sequelize,
-    Op
+    Op,
+    web
  }; 
 
 
