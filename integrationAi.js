@@ -11,10 +11,11 @@ const configuration = new Configuration({
     const result = await messages.findAll({
         attributes: ['user', 'text', 'timestamp']
       })
+
       const data = result.map(message => ({
         user: message.user,
         text: message.text,
-        hora: message.timestamp
+        time: message.timestamp
       }));
 
       const datamejorada = JSON.stringify(data)
