@@ -36,12 +36,11 @@ const msgControl = async (req, res) => {
           });
         }
       }
-  
-      res.send("Ok");
+ 
     } catch (error) {
       console.error(error);
       res.status(500).send("Ocurrió un error al obtener los mensajes de Slack.");
     }
-  };
+  };    
 
 module.exports = msgControl; 

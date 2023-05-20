@@ -16,8 +16,11 @@ const configuration = new Configuration({
         text: message.text,
         hora: message.timestamp
       }));
+
+      const datamejorada = JSON.stringify(data)
+      console.log(datamejorada)
     
-      const prompt = `You receive an array of objects. Each object represents a comment made in a slack channel. User means the name of the user, Text means the message of the comment and timestamps is the time it was written. You are going to take each of the objects and with them you will give me a condensed summary of what is being talked about, what is the discussion, what topics are covered. You contextualize everything according to the user who writes the message. encapsulates the main events and discussions that happened within that Slack channel based on the messages I deliver to you. The array are: ${JSON.stringify(data)}`
+      const prompt = `I give you an array of comments written in a slack channel. user means the name of the user, text is the comment written, and time means the moment the comment was written in unix format. I need a condensed summary, encapsulating the main events and discussions that occurred within that Slack channel. Take into account the moment it was written according to its timestamp, therefore take into account converting the unix format and know at what moment each of the comments were written, starting from the first that was written to the last. the array is this: ${datamejorada}`
 
 
   const openai = new OpenAIApi(configuration);
