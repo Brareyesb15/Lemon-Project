@@ -11,8 +11,8 @@ mainRouter.get('/', async (req, res) => {
 });
 
 mainRouter.get("/prueba", async (req,res)=> {
-    console.log("Estoy andando")
-  const response = await completePetition(); 
-  res.send(response)
+    await msgControl(req,res)
+    const response = await completePetition(); 
+    res.send(response)
 })
 module.exports = mainRouter;
