@@ -1,0 +1,4 @@
+Lista la primera parte. AHora vas a tomar la info que tienes guardada en database y vas a pasarla a la API de OpenAI, que recibirá 
+la data desde la base de datos. 
+La funcion que se ejecuta cada cierto tiempo primero ejecuta la primera parte y luego la segunda, para pedirle a open AI que tome esta info
+y haga algo. Puedes revisar el OPENAI de capacitech kids. 
