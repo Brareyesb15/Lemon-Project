@@ -5,6 +5,9 @@ module.exports = sequelize => {
     text: {
       type: DataTypes.TEXT
     },
+    user: {
+      type:DataTypes.STRING
+    },
     timestamp: {
       type: DataTypes.STRING
     }

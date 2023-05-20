@@ -16,11 +16,24 @@ try {
 
     // Guardar mensajes en la base de datos
     for (const message of result.messages) {
-      await messages.create({
-        text: message.text,
-        timestamp: message.ts
-      });
-    }
+        const { user, text, ts } = message;
+      
+        // Accede a la información del usuario y el contenido del mensaje
+        console.log('Usuario:', user);
+        console.log('Mensaje:', text);
+      
+         // Obtener información del usuario
+  const userInfo = await web.users.info({ user: user });
+
+  // Accede al nombre del usuario
+  const userName = userInfo.user.real_name;
+        // Guardar mensajes en la base de datos
+        await messages.create({
+          user: userName,
+          text: text,
+          timestamp: ts
+        });
+      }
 
     res.send('Mensajes guardados en la base de datos.');
   } catch (error) {
