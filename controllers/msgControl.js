@@ -1,44 +1,74 @@
-const { messages } = require("../configDB");
-const { CHANNEL_SLACK, SLACK_TOCKEN } = process.env;
+const { messages, comments } = require("../configDB");
+const { CHANNEL_SLACK, SLACK_TOKEN } = process.env;
 const { WebClient } = require('@slack/web-api');
 
-// Create an instance of Slack's WebClient
-const slackToken = SLACK_TOCKEN;
-const web = new WebClient(slackToken); // receiving the Slack API token
+// Crea una instancia de WebClient de Slack
+const slackToken = SLACK_TOKEN;
+const web = new WebClient(slackToken);
 
-// Message control function
+// Función de control de mensajes
 const msgControl = async (req, res) => {
+  console.log("Entre")
   try {
-    // Get messages from the Slack channel
+    // Obtén los mensajes del canal de Slack
     const result = await web.conversations.history({ channel: CHANNEL_SLACK });
 
-    // Save messages to the database
+    // Guarda los mensajes y sus comentarios en la base de datos
     for (const message of result.messages) {
       const { user, text, ts } = message;
 
-      // Check if the message already exists in the database
+      // Verifica si el mensaje ya existe en la base de datos
       const existingMessage = await messages.findOne({ where: { timestamp: ts } });
 
-      // If the message doesn't exist, save it to the database
+      // Si el mensaje no existe, guárdalo en la base de datos
       if (!existingMessage) {
-        // Get user information
+        // Obtiene información del usuario
         const userInfo = await web.users.info({ user: user });
 
-        // Access the user's name
+        // Accede al nombre real del usuario
         const userName = userInfo.user.real_name;
 
-        // Save messages to the database
-        await messages.create({
+        // Guarda el mensaje en la base de datos
+        const createdMessage = await messages.create({
           user: userName,
           text: text,
           timestamp: ts 
         });
+
+        console.log("termine acá", createdMessage)
+
+        // Obtén los comentarios del mensaje
+        const commentsResult = await web.conversations.replies({
+          channel: CHANNEL_SLACK,
+          ts: ts
+        });
+
+        // Guarda los comentarios en la base de datos
+        for (const comment of commentsResult.messages) {
+          const { user: commentUser, text: commentText, ts: commentTs } = comment;
+
+          // Obtén información del usuario del comentario
+          const commentUserInfo = await web.users.info({ user: commentUser });
+
+          // Accede al nombre real del usuario del comentario
+          const commentUserName = commentUserInfo.user.real_name;
+
+          // Guarda el comentario en la base de datos, relacionándolo con el mensaje
+          await comments.create({
+            user: commentUserName,
+            text: commentText,
+            timestamp: commentTs,
+            messageId: createdMessage.id
+          });
+        }
       }
     }
 
+    res.status(200).send("Slack messages and comments saved successfully.");
+
   } catch (error) {
     console.error(error);
-    res.status(500).send("An error occurred while getting Slack messages.");
+    res.status(500).send("An error occurred while getting Slack messages and comments.");
   }
 };
 
