@@ -20,6 +20,10 @@ modelcomments(sequelize)
 
 const {messages,comments} = sequelize.models;
 
+comments.belongsTo(messages, {
+  foreignKey: "messageId"
+});
+
 module.exports = {
     ...sequelize.models,
     sequelize,
