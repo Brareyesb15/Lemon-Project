@@ -63,8 +63,20 @@ const msgControl = async (req, res) => {
         }
       }
     }
+    // const resulta = await comments.findAll({
+    //   attributes: ['user', 'text', 'timestamp', "messageId"]
+    // });
+  
+    // // Convert the result into a suitable data format
+    // const data = resulta.map(message => ({
+    //   user: message.user,
+    //   text: message.text,
+    //   time: message.timestamp,
+    //   comment : message.messageId
+    // }));
+    // const dataString = JSON.stringify(data)
 
-    res.status(200).send("Slack messages and comments saved successfully.");
+    // res.status(200).send(dataString);
 
   } catch (error) {
     console.error(error);

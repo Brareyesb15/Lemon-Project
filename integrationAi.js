@@ -1,6 +1,6 @@
 const { Configuration, OpenAIApi } = require('openai');
 const { OPENAI_API_KEY } = process.env;
-const { messages } = require("./configDB");
+const {comments} = require("./configDB");
 
 // Create a configuration instance with the OpenAI API key
 const configuration = new Configuration({
@@ -10,15 +10,16 @@ const configuration = new Configuration({
 // Function to complete the petition using OpenAI API
 const completePetition = async () => {
   // Retrieve messages from the database
-  const result = await messages.findAll({
-    attributes: ['user', 'text', 'timestamp']
+  const result = await comments.findAll({
+    attributes: ['user', 'text', 'timestamp', "messageId"]
   });
 
   // Convert the result into a suitable data format
   const data = result.map(message => ({
     user: message.user,
     text: message.text,
-    time: message.timestamp
+    time: message.timestamp,
+    comment : message.messageId
   }));
 
   // Convert the data to a JSON string
@@ -26,7 +27,8 @@ const completePetition = async () => {
   console.log(dataString);
 
   // Create the prompt to be used for the API call
-  const prompt = `I give you an array of comments written in a Slack channel. "user" means the name of the user, "text" is the comment written, and "time" indicates the moment the comment was written in Unix format. I need a condensed summary encapsulating the main events and discussions that occurred within that Slack channel. Take into account the timestamp to understand the order of comments. The array is as follows: ${dataString}`;
+  const prompt = `Receives an array with objects. Each object is a different comment in the same slack channel. User is the user who writes it, text is the message of the comment, time is the time it is written in Unix format and comment means the thread to which it belongs within the channel.
+  I need a condensed summary that encapsulates the main threads that are written, the discussions that happened within that Slack channel. Keep in mind the time for the summary to tell me from the oldest thread to the newest thread. The array is as follows: ${dataString}`;
 
   // Create an instance of the OpenAI API
   const openai = new OpenAIApi(configuration);
