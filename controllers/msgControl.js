@@ -1,46 +1,45 @@
-const  {messages}  = require("../configDB");
-const { CHANNEL_SLACK, SLACK_TOCKEN} = process.env;
+const { messages } = require("../configDB");
+const { CHANNEL_SLACK, SLACK_TOCKEN } = process.env;
 const { WebClient } = require('@slack/web-api');
 
+// Create an instance of Slack's WebClient
+const slackToken = SLACK_TOCKEN;
+const web = new WebClient(slackToken); // receiving the Slack API token
 
-// Crear instancia de WebClient de Slack
-const slackToken = SLACK_TOCKEN
-const web = new WebClient(slackToken);  // recibiendo el token de slack api
-
-
+// Message control function
 const msgControl = async (req, res) => {
-    try {
-      // Obtener mensajes del canal de Slack
-      const result = await web.conversations.history({ channel: CHANNEL_SLACK });
-  
-      // Guardar mensajes en la base de datos
-      for (const message of result.messages) {
-        const { user, text, ts } = message;
-  
-        // Verificar si el mensaje ya existe en la base de datos
-        const existingMessage = await messages.findOne({ where: { timestamp: ts } });
-  
-        // Si el mensaje no existe, guardarlo en la base de datos
-        if (!existingMessage) {
-          // Obtener información del usuario
-          const userInfo = await web.users.info({ user: user });
-  
-          // Acceder al nombre del usuario
-          const userName = userInfo.user.real_name;
-  
-          // Guardar mensajes en la base de datos
-          await messages.create({
-            user: userName,
-            text: text,
-            timestamp: ts
-          });
-        }
-      }
- 
-    } catch (error) {
-      console.error(error);
-      res.status(500).send("Ocurrió un error al obtener los mensajes de Slack.");
-    }
-  };    
+  try {
+    // Get messages from the Slack channel
+    const result = await web.conversations.history({ channel: CHANNEL_SLACK });
 
-module.exports = msgControl; 
+    // Save messages to the database
+    for (const message of result.messages) {
+      const { user, text, ts } = message;
+
+      // Check if the message already exists in the database
+      const existingMessage = await messages.findOne({ where: { timestamp: ts } });
+
+      // If the message doesn't exist, save it to the database
+      if (!existingMessage) {
+        // Get user information
+        const userInfo = await web.users.info({ user: user });
+
+        // Access the user's name
+        const userName = userInfo.user.real_name;
+
+        // Save messages to the database
+        await messages.create({
+          user: userName,
+          text: text,
+          timestamp: ts 
+        });
+      }
+    }
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("An error occurred while getting Slack messages.");
+  }
+};
+
+module.exports = msgControl;
